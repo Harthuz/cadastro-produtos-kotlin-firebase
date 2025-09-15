@@ -1,0 +1,16 @@
+hernandes@mint-hernandes:~/Downloads/App_firebase$ keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+Nome do alias: androiddebugkey
+Data de criação: 14 de ago. de 2025
+Tipo de entrada: PrivateKeyEntry
+Comprimento da cadeia de certificados: 1
+Certificado[1]:
+Proprietário: C=US, O=Android, CN=Android Debug
+Emissor: C=US, O=Android, CN=Android Debug
+Número de série: 1
+Válido de: Thu Aug 14 20:34:38 BRT 2025 até: Sat Aug 07 20:34:38 BRT 2055
+Fingerprints do certificado:
+	 SHA1: 62:F4:95:4D:B0:F3:02:27:2C:42:94:C2:B7:6F:9D:A4:A3:A8:B9:47
+	 SHA256: 3F:9E:C4:55:E7:3F:80:8F:38:2D:F1:92:47:1B:49:26:15:09:53:F6:54:98:92:F5:A9:56:7B:88:3D:F6:16:34
+Nome do algoritmo de assinatura: SHA256withRSA
+Algoritmo de Chave Pública do Assunto: Chave RSA de 2048 bits
+Versão: 1

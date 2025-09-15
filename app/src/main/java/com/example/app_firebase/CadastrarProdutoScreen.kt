@@ -19,13 +19,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app_firebase.R
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun CadastrarProdutoScreen(onRegisterComplete: () -> Unit) {
     var produto by remember { mutableStateOf("") }
     var quantidade by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf("") }
+    var showSuccessMessage by remember { mutableStateOf(false) }
+    var showErrorMessage by remember { mutableStateOf(false) }
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -110,13 +112,51 @@ fun CadastrarProdutoScreen(onRegisterComplete: () -> Unit) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
-                    onClick = { onRegisterComplete() },
+                    onClick = {
+                        // Salvar os dados no Firebase Firestore
+                        val db = FirebaseFirestore.getInstance()
+                        val productData = hashMapOf(
+                            "nome" to produto,
+                            "quantidade" to quantidade.toIntOrNull(), // Converte para Int, ou null se não for um número válido
+                            "descricao" to descricao
+                        )
+
+                        db.collection("produtos")
+                            .add(productData)
+                            .addOnSuccessListener {
+                                showSuccessMessage = true
+                            }
+                            .addOnFailureListener {
+                                showErrorMessage = true
+                            }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text("Cadastrar", fontSize = 16.sp)
+                }
+
+                if (showSuccessMessage) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showSuccessMessage = false
+                            onRegisterComplete() // Navegar para a tela de listagem ou outra tela
+                        },
+                        title = { Text("Sucesso!") },
+                        text = { Text("Produto cadastrado com sucesso.") },
+                        confirmButton = { Button(onClick = { showSuccessMessage = false; onRegisterComplete() }) { Text("OK") } }
+                    )
+                }
+
+                if (showErrorMessage) {
+                    AlertDialog(
+                        onDismissRequest = { showErrorMessage = false },
+                        title = { Text("Erro") },
+                        text = { Text("Ocorreu um erro ao cadastrar o produto.") },
+                        confirmButton = { Button(onClick = { showErrorMessage = false }) { Text("OK") } }
+                    )
                 }
             }
         }

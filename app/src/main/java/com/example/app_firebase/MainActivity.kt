@@ -1,6 +1,7 @@
 package com.example.app_firebase
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,9 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.app_firebase.ui.theme.App_firebaseTheme
-import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.auth
 
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +26,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
-        val auth = Firebase.auth
         setContent {
             App_firebaseTheme  {
                 val navController = rememberNavController()
@@ -56,9 +54,7 @@ class MainActivity : ComponentActivity() {
                                 type = NavType.StringType
                             })
                         ) { backStackEntry ->
-                            val userName = backStackEntry.arguments?.getString("userName") ?: "Usuário"
                             HomeScreen(
-                                userName = userName,
                                 onCadastrarProduto = {
                                     navController.navigate("cadastrarProduto")
                                 },

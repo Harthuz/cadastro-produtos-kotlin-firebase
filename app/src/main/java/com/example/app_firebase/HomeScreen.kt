@@ -16,11 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app_firebase.R
 
 @Composable
 fun HomeScreen(
-    userName: String = "Usuário",
     onCadastrarProduto: () -> Unit,
     onListarProdutos: () -> Unit,
     onLogout: () -> Unit
@@ -73,7 +71,6 @@ fun HomeScreen(
                             onListarProdutos()
                         }
                     )
-                    Divider()
                     DropdownMenuItem(
                         text = { Text("Deslogar") },
                         onClick = {
@@ -104,9 +101,10 @@ fun HomeScreen(
                         .height(80.dp)
                         .padding(bottom = 16.dp)
                 )
+                val nome = Globals.username
 
                 Text(
-                    text = "Bem-vindo, $userName!",
+                    text = "Bem-vindo, ${nome ?: "Usuário"}!", // Exibe "Usuário" se userName for nulo
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,

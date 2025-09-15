@@ -22,17 +22,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 
 @ExperimentalMaterial3Api
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListarProdutosScreen(onBack: () -> Unit) {
-    val produtos = remember {
-        mutableStateListOf(
-            Produto("Notebook Gamer", 5, "RTX 4090, 32GB RAM"),
-            Produto("Smartphone", 15, "Tela AMOLED 6.5\""),
-            Produto("Fone Bluetooth", 30, "Noise Cancelling")
-        )
+    val db = Firebase.firestore
+    val produtos = remember { mutableStateListOf<Produto>() }
+
+    LaunchedEffect(Unit) {
+        try {
+            val result = db.collection("produtos").get().await()
+            val listaProdutos = result.map { document ->
+                Produto(
+                    document.getString("nome") ?: "",
+                    document.getLong("quantidade")?.toInt() ?: 0,
+                    document.getString("descricao") ?: ""
+                )
+            }
+            produtos.addAll(listaProdutos)
+        } catch (e: Exception) {
+            // Tratar exceção (ex: exibir mensagem de erro)
+            println("Erro ao buscar produtos: ${e.message}")
+        }
     }
 
     var produtoEmEdicao by remember { mutableStateOf<Produto?>(null) }
@@ -110,7 +125,26 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
                         }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Editar")
                         }
-                        IconButton(onClick = { produtos.remove(produto) }) {
+                        IconButton(onClick = {
+                            db.collection("produtos").document(produto.nome) // Assumindo que o nome é o ID
+                                .delete()
+                                .addOnSuccessListener {
+                                    produtos.remove(produto)
+                                    // Produto excluído com sucesso
+                                }
+                                .addOnFailureListener { e ->
+                                    // Erro ao excluir produto
+                                    println("Erro ao excluir produto: ${e.message}")
+                                }
+                            val productData = hashMapOf(
+                                "nome" to produto.nome,
+                                "quantidade" to produto.quantidade,
+                                "descricao" to produto.descricao
+                            )
+
+
+
+                        }) {
                             Icon(Icons.Filled.Delete, contentDescription = "Excluir")
                         }
                     }
@@ -148,14 +182,31 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
             confirmButton = {
                 TextButton(onClick = {
                     val index = produtos.indexOf(produtoEmEdicao)
+                    val produtoAtualizado = Produto(
+                        nome,
+                        quantidade.toIntOrNull() ?: 0,
+                        descricao
+                    )
                     if (index >= 0) {
-                        produtos[index] = Produto(
-                            nome,
-                            quantidade.toIntOrNull() ?: 0,
-                            descricao
+                        val productData = hashMapOf(
+                            "nome" to produtoAtualizado.nome,
+                            "quantidade" to produtoAtualizado.quantidade,
+                            "descricao" to produtoAtualizado.descricao
                         )
+                        db.collection("produtos").document(produtoEmEdicao!!.nome) // Assumindo que o nome é o ID
+                            .set(productData)
+                            .addOnSuccessListener {
+                                produtos[index] = produtoAtualizado
+                                produtoEmEdicao = null
+                                // Produto atualizado com sucesso
+                            }
+                            .addOnFailureListener { e ->
+                                // Erro ao atualizar produto
+                                println("Erro ao atualizar produto: ${e.message}")
+                            }
+                    } else {
+                        produtoEmEdicao = null
                     }
-                    produtoEmEdicao = null
                 }) {
                     Text("Salvar")
                 }

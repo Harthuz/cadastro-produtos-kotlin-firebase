@@ -1,5 +1,7 @@
 package com.example.app_firebase
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,13 +16,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.app_firebase.R
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+
 
 @Composable
 fun RegisterScreen(onRegisterComplete: () -> Unit) {
@@ -28,6 +33,8 @@ fun RegisterScreen(onRegisterComplete: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val auth = Firebase.auth
+    val context = LocalContext.current
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -125,7 +132,32 @@ fun RegisterScreen(onRegisterComplete: () -> Unit) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
-                    onClick = { onRegisterComplete() },
+                    onClick = {
+                        if (password == confirmPassword) {
+                            val auth = Firebase.auth
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        // Salvar nome de usuário localmente usando o objeto UserPreferences
+                                        Globals.username = username
+                                        Toast.makeText(
+                                            context,
+                                            "Cadastro realizado com sucesso!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        onRegisterComplete()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Erro ao cadastrar: ${task.exception?.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(context, "Senhas não conferem", Toast.LENGTH_SHORT).show()
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),

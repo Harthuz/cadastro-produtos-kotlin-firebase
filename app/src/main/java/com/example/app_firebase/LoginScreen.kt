@@ -75,7 +75,7 @@ fun LoginScreen(onLogin: (String) -> Unit, onRegisterClick: () -> Unit) {
                 OutlinedTextField(
                     value = user,
                     onValueChange = { user = it },
-                    label = { Text("Usuário") },
+                    label = { Text("Email") },
                     leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth(),
                 )
