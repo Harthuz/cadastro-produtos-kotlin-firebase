@@ -179,3 +179,10 @@ fun RegisterScreen(onRegisterComplete: () -> Unit) {
         }
     }
 }
+
+
+@Preview
+@Composable
+fun RegisterScreenPreview() {
+    RegisterScreen(onRegisterComplete = {})
+}

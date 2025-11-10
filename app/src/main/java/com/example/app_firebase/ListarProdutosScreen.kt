@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
@@ -223,3 +224,9 @@ data class Produto(
     val quantidade: Int,
     val descricao: String
 )
+
+@Preview
+@Composable
+fun ListarProdutosScreenPreview() {
+    ListarProdutosScreen(onBack = {})
+}
