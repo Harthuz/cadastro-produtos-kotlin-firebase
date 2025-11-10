@@ -118,6 +118,9 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
                                 )
                             }
                         }
+
+
+                        // Botão editar
                         IconButton(onClick = {
                             produtoEmEdicao = produto
                             nome = produto.nome
@@ -126,6 +129,9 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
                         }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Editar")
                         }
+
+
+                        // Botão excluir
                         IconButton(onClick = {
                             db.collection("produtos").document(produto.nome) // Assumindo que o nome é o ID
                                 .delete()
@@ -142,9 +148,6 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
                                 "quantidade" to produto.quantidade,
                                 "descricao" to produto.descricao
                             )
-
-
-
                         }) {
                             Icon(Icons.Filled.Delete, contentDescription = "Excluir")
                         }
@@ -188,7 +191,8 @@ fun ListarProdutosScreen(onBack: () -> Unit) {
                         quantidade.toIntOrNull() ?: 0,
                         descricao
                     )
-                    if (index >= 0) {
+                    
+                    if (index >= 0) { 
                         val productData = hashMapOf(
                             "nome" to produtoAtualizado.nome,
                             "quantidade" to produtoAtualizado.quantidade,
