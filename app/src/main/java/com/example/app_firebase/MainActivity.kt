@@ -80,11 +80,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Preview
-@Composable
-fun AppPreview() {
-    App_firebaseTheme {
-        App()
-    }
-}
